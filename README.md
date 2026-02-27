@@ -3,37 +3,264 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drakon Birthday Gift</title>
+<title>System Boot - Drakon</title>
+
 <style>
-body {
-  margin: 0;
-  font-family: monospace;
-  background: #000;
-  color: #00ff99;
-  text-align: center;
-  overflow-x: hidden;
+
+body{
+margin:0;
+background:#050505;
+color:#00ffcc;
+font-family:monospace;
+overflow-x:hidden;
+text-align:center;
 }
 
-/* subtle stars background */
-body::before {
-  content: "";
-  position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background: radial-gradient(white, transparent 1px) repeat;
-  background-size: 50px 50px;
-  opacity: 0.05;
-  pointer-events:none;
+/* Stars */
+.star{
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+animation:twinkle 4s infinite;
+}
+@keyframes twinkle{
+0%,100%{opacity:0.2;}
+50%{opacity:1;}
 }
 
-/* Center containers */
-.center {
-  position: absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+/* Center */
+.center{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:90%;
+max-width:600px;
+}
+
+/* Cursor */
+.cursor{
+display:inline-block;
+width:10px;
+background:#00ffcc;
+margin-left:5px;
+animation:blink 1s infinite;
+}
+@keyframes blink{
+50%{opacity:0;}
+}
+
+.hidden{display:none;}
+
+input{
+padding:12px;
+font-size:18px;
+border-radius:6px;
+border:none;
+text-align:center;
+width:80%;
+}
+
+button{
+padding:12px 22px;
+margin-top:12px;
+background:#00ffcc;
+border:none;
+cursor:pointer;
+border-radius:6px;
+font-size:16px;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:30px;
+border-radius:15px;
+backdrop-filter:blur(12px);
+box-shadow:0 0 25px #00ffcc55;
+color:white;
+animation:fadeIn 1.5s;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;}
+}
+
+/* Progress Bar */
+.bar{
+width:100%;
+height:8px;
+background:#111;
+margin-top:15px;
+border-radius:10px;
+overflow:hidden;
+}
+.progress{
+height:100%;
+width:0%;
+background:#00ffcc;
+transition:width .3s;
+}
+
+#message{
+white-space:pre-line;
+line-height:1.7;
+font-size:18px;
+}
+
+#perks{
+margin-top:20px;
+color:#ffd700;
+font-weight:bold;
+opacity:0;
+transition:1s;
+}
+
+.show{
+opacity:1 !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop>
+<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<!-- Boot -->
+<div id="boot" class="center">
+<h2 id="bootText"></h2><span class="cursor"></span>
+
+<div class="bar">
+<div id="progress" class="progress"></div>
+</div>
+</div>
+
+<!-- Unlock -->
+<div id="unlock" class="center hidden">
+<h2>SYSTEM AUTHENTICATION</h2>
+<p>Enter Codename</p>
+<input id="nameInput" placeholder="Codename">
+<br>
+<button onclick="checkName()">UNLOCK</button>
+<p id="error"></p>
+</div>
+
+<!-- Gift -->
+<div id="gift" class="center hidden">
+<div class="card">
+<h1>Welcome, Drakon 🐉</h1>
+<p id="message"></p>
+
+<div id="perks">
+⚡ SYSTEM PERKS UPGRADED ⚡<br><br>
+Writing Skill +100<br>
+Wealth +100<br>
+Health +100
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* Stars */
+for(let i=0;i<120;i++){
+let s=document.createElement("div");
+s.className="star";
+s.style.top=Math.random()*100+"%";
+s.style.left=Math.random()*100+"%";
+document.body.appendChild(s);
+}
+
+/* Boot Text */
+const bootMsg=
+"System Initializing...\n"+
+"Scanning Identity...\n"+
+"Loading Destiny Modules...\n"+
+"Synchronizing Future Path...\n"+
+"Access Preparing...\n";
+
+let i=0;
+let load=0;
+
+function boot(){
+if(i<bootMsg.length){
+bootText.textContent+=bootMsg.charAt(i);
+i++;
+setTimeout(boot,30);
+}
+
+load+=2;
+progress.style.width=load+"%";
+
+if(load<100){
+requestAnimationFrame(boot);
+}else{
+setTimeout(()=>{
+boot.classList.add("hidden");
+unlock.classList.remove("hidden");
+},800);
+}
+}
+boot();
+
+/* Unlock */
+let started=false;
+
+function checkName(){
+let name=nameInput.value.trim().toLowerCase();
+
+if(name==="drakon"){
+unlock.classList.add("hidden");
+gift.classList.remove("hidden");
+
+music.play().catch(()=>{});
+
+if(!started){
+started=true;
+typeMessage();
+}
+
+}else{
+error.innerText="Identity Not Recognized ❌";
+}
+}
+
+/* Message Typing */
+const msg=`Today marks the rise of greatness.
+
+Emmanuel • Praise • Sunbola
+
+Your journey moves toward success.
+Inspiration surrounds you.
+Motivation strengthens you.
+
+Soon, you will live the life you envision.
+
+Keep ascending, Drakon.`;
+
+let t=0;
+
+function typeMessage(){
+if(t<msg.length){
+message.textContent+=msg.charAt(t);
+t++;
+setTimeout(typeMessage,25);
+}else{
+setTimeout(()=>{
+perks.classList.add("show");
+},700);
+}
+}
+
+</script>
+
+</body>
+</html>  transform: translate(-50%,-50%);
   width:90%;
   max-width:600px;
 }
